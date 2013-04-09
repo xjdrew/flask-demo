@@ -7,6 +7,8 @@ from flask import jsonify
 from flask import json
 
 from functools import wraps
+from db import Server
+from db import db_session
 
 app = Flask(__name__)
 
@@ -59,8 +61,33 @@ def json_data():
     # return jsonify(b)
     return Response(json.dumps(b, indent = 2), mimetype='application/json') 
 
+ret = []
+@app.route('/static_servers/')
+def static_servers():
+    return Response(json.dumps(ret, indent = 2), mimetype='application/json') 
+
+@app.route('/servers/')
+def servers():
+    ret = []
+    for server in db_session.query(Server):
+        ret.append({'ip':server.ip, 'name':server.name})
+        if len(ret) > 100:
+            break
+
+    #return Response(json.dumps(ret, indent = 2), mimetype='application/json') 
+    return Response('[]', mimetype='application/json') 
+
+@app.teardown_request
+def shutdown_session(exception=None):
+    db_session.remove()
+
 if __name__ == '__main__':
-    app.debug = True
+    for server in db_session.query(Server):
+        ret.append({'ip':server.ip, 'name':server.name})
+        if len(ret) > 100:
+            break
+
+    app.debug = False
     app.run(port=3888)
 
 
