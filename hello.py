@@ -2,7 +2,8 @@
 
 from flask import Flask
 from flask import render_template
-from flask import request, Response
+from flask import session
+from flask import request, Response, make_response
 from flask import jsonify
 from flask import json
 
@@ -11,6 +12,7 @@ from db import Server
 from db import db_session
 
 app = Flask(__name__)
+app.secret_key = '!!!!!!!315gqaaga'
 
 def check_auth(username, password):
     return username == 'xjdrew' and password == 'test123'
@@ -32,7 +34,9 @@ def requires_auth(f):
 
 @app.route('/')
 def index():
-    return 'index page'
+    if not 'username' in session:
+        session['username'] = 'xjdrew'
+    return session['username'] or __name__
 
 @app.route("/about/")
 def about():
@@ -77,6 +81,14 @@ def servers():
     #return Response(json.dumps(ret, indent = 2), mimetype='application/json') 
     return Response('[]', mimetype='application/json') 
 
+@app.route('/file')
+def file():
+    with app.open_resource('server_list.txt') as f:
+        resp = make_response(f.read())
+        resp.headers['Content-type'] = 'application/octet-stream'
+        resp.headers['Content-Disposition'] = 'attachment; filename="test.txt"'
+    return resp
+
 @app.teardown_request
 def shutdown_session(exception=None):
     db_session.remove()
@@ -87,7 +99,7 @@ if __name__ == '__main__':
         if len(ret) > 100:
             break
 
-    app.debug = False
+    app.debug = True
     app.run(port=3888)
 
 
