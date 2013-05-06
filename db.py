@@ -41,7 +41,7 @@ def init_db(filename):
     db_session.commit()
 
 if __name__ == '__main__':
-    #init_db('server_list.txt')
+    init_db('server_list.txt')
     s = db_session.query(Server).first()
     print(unicode(s))
 
