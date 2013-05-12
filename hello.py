@@ -78,8 +78,8 @@ def servers():
         if len(ret) > 100:
             break
 
-    #return Response(json.dumps(ret, indent = 2), mimetype='application/json') 
-    return Response('[]', mimetype='application/json') 
+    return Response(json.dumps(ret, indent = 2), mimetype='application/json') 
+    #return Response('[]', mimetype='application/json') 
 
 @app.route('/file')
 def file():
@@ -100,6 +100,6 @@ if __name__ == '__main__':
             break
 
     app.debug = True
-    app.run(port=3888)
+    app.run(host='0.0.0.0', port=3888)
 
 

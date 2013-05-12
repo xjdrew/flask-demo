@@ -35,14 +35,12 @@ def init_db(filename):
     f = open(filename, 'r')
     for l in f.readlines():
         l = l.rstrip()
-        name, ip = l.split(' ')
-        server = Server(name, ip)
-        db_session.add(server)
+        if len(l) > 0:
+            name, ip = l.split(' ')
+            server = Server(name, ip)
+            db_session.add(server)
     db_session.commit()
 
 if __name__ == '__main__':
     init_db('server_list.txt')
-    s = db_session.query(Server).first()
-    print(unicode(s))
-
 
